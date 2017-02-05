@@ -17,6 +17,8 @@
 //});
 
 
+Route::get('getArtical', 'PostController@get');
+Route::post('addArtical', 'PostController@insert');
 
 Route::get('/', 'PostController@index');
 
@@ -65,4 +67,5 @@ Route::group(['middleware' => ['auth']], function() {
 
 //Route::get('/home', 'HomeController@index');
 
+////// route Api 
 

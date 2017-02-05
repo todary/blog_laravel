@@ -9,11 +9,14 @@ namespace App\Http\Controllers;
 
 use App\Posts;
 use App\User;
+use Psy\Exception\ErrorException;
 use Redirect;
 use App\Http\Controllers\Controller;
 //use App\Http\Requests\PostFormRequest;
 use App\Http\Requests;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller {
 
@@ -50,8 +53,12 @@ class PostController extends Controller {
 
     public function store(Request $request) {
         $post = new Posts();
+
+        $images=$this->multiple_upload($request->file('images'));
         $post->title = $request->get('title');
         $post->body = $request->get('body');
+        $post->map = $request->get('map');
+        $post->image =json_encode($images);
         $post->slug = str_slug($post->title);
         $post->author_id = $request->user()->id;
         if ($request->has('save')) {
@@ -63,7 +70,7 @@ class PostController extends Controller {
         }
         $post->save();
 
-        return redirect('edit/' . $post->slug)->withMessage($message);
+        return redirect('/');
     }
 
     public function edit(Request $request, $slug) {
@@ -124,6 +131,50 @@ class PostController extends Controller {
         }
 
         return redirect('/')->with($data);
+    }
+
+
+    public function multiple_upload($files)
+    {
+        // getting all of the post data
+//        $files = Input::file('images');
+        // Making counting of uploaded images
+        $file_count = count($files);
+        $imageArray=array();
+        // start count how many uploaded
+        $uploadcount = 0;
+        foreach ($files as $file) {
+            $rules = array('file' => 'required'); //'required|mimes:png,gif,jpeg,txt,pdf,doc'
+            $validator = Validator::make(array('file' => $file), $rules);
+            if ($validator->passes()) {
+                $destinationPath = base_path() . '/public/img';
+                $filename = $file->getClientOriginalName();
+                $upload_success = $file->move($destinationPath, $filename);
+                $uploadcount++;
+                $imageArray[]=$filename;
+            }
+        }
+        if ($uploadcount == $file_count) {
+            return $imageArray;
+        }
+        else
+            return false;
+    }
+
+
+    public function get()
+    {
+        $artical = Posts::all();
+        return response()->json(['data' => $artical], 200);
+    }
+
+    public  function  insert(Request $request)
+    {
+
+        $values=$request->all();
+        $values['author_id']=1;
+        Posts::create($values);
+        return response()->json(['message'=>' artical Add ','code'=>201]);
     }
 
 }

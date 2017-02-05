@@ -20,17 +20,28 @@
                 <div class="panel-heading"> New Post  </div>
 
                 <div class="panel-body">
-                    {{ Form::open() }}
+                    {{--{{ Form::open(array('files'=>true)) }}--}}
+
+                    {!! Form::open(array('url'=>'new-post','method'=>'POST', 'files'=>true)) !!}
+
                     <div class="form-group">
                         <input required="required" value="{{ old('title') }}" placeholder="Enter title here" type="text" name = "title"class="form-control" />
+                        <label>add image </label>
+                        {!! Form::file('images[]', array('multiple'=>true)) !!}
+
+                        <label>add map </label>
+                        <input required="required" value="{{ old('title') }}" placeholder="Enter map here" type="text" name = "map"class="form-control" />
+
+                        {{--<input type="file" name="images" />--}}
                     </div>
                     <div class="form-group">
                         <textarea name='body'class="form-control">{{ old('body') }}</textarea>
                     </div>
                     <input type="submit" name='publish' class="btn btn-success" value = "Publish"/>
                     <input type="submit" name='save' class="btn btn-default" value = "Save Draft" />
-
-                    {{ Form::close() }}
+                    {{--{!! Form::submit('Submit', array('class'=>'send-btn')) !!}--}}
+                    {!! Form::close() !!}
+                    {{--{{ Form::close() }}--}}
                 
                 </div>
             </div>
